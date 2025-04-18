@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Real-Time Bus Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script defer="" src="Thesis.js">
+  const registerBtn = document.getElementById('registerBtn');
+  const authModal = document.getElementById('authModal');
+
+  registerBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    authModal.style.display = 'block';
+  });
+
+  window.addEventListener('click', function (e) {
+    if (e.target.classList.contains('modal-blur')) {
+      authModal.style.display = 'none';
+    }
+  });
+
+</script>
+<link href="Thesis.css" rel="stylesheet"/>
+<style>
+    :root {
+      --primary: #0073e6;
+      --secondary: #00d4ff;
+      --text: #1e1e2f;
+      --light-bg: #f2f4f8;
+      --white: #ffffff;
+      --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #1e1e2f;
+      color: #f1f1f1;
+    }
+
+    header {
+      background: white;
+      color: #2c2f3a;
+      padding: 1.5rem 0;
+      text-align: center;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      max-width: 1300px;
+      margin: 2rem auto;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #2c2f3a;
+    }
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: white;
+    }
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    nav ul li a {
+      background-color: #e0e0e0;
+      color: #2c2f3a;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.05rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      margin: 0 4px;
+      transition: background 0.2s ease;
+    }
+
+    nav ul li a:hover {
+      background-color: #cfcfcf;
+    }
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+      color: var(--white);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: var(--secondary);
+    }
+
+    .hero {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: var(--white);
+      padding: 6rem 2rem;
+      text-align: center;
+      border-radius: var(--radius);
+      margin: 2rem auto;
+      max-width: 1200px;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary {
+      background: var(--white);
+      color: var(--primary);
+      font-weight: bold;
+      padding: 0.75rem 2rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: background 0.3s;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover {
+      background: #eaeaea;
+    }
+
+    section {
+      margin: 2rem auto;
+      max-width: 1200px;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      font-size: 1rem;
+    }
+
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .schedule-table thead {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .status-on-time {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .status-delayed {
+      color: #ffc107;
+      font-weight: bold;
+    }
+
+    .status-cancelled {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .announcement {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+.announcement-item {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+    .announcement-item img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+    }
+    .announcement-content {
+      padding: 1rem 1.5rem;
+      text-align: left;
+    }
+    .announcement-content h3 {
+      margin-top: 0;
+      color: #0073e6;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      background-color: #005bb5;
+    }
+
+    .section-wrapper {
+      background: white;
+      border-radius: 16px;
+      border: 2px solid #e0e4ec;
+      padding: 2rem;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      margin: 2rem auto;
+      max-width: 1100px;
+    }
+
+    footer {
+      text-align: center;
+      background: var(--text);
+      color: var(--white);
+      padding: 2rem;
+      margin-top: 2rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+  
+    .header-button {
+      background-color: #e0e0e0;
+      color: #1e1e2f;
+      font-weight: bold;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .header-button:hover {
+      background-color: #cfcfcf;
+    }
+
+    /* --- Yeni Stil Kuralları: Announcements ve Contact bölümlerinde beyaz metinleri siyah yap --- */
+    #announcements,
+    #announcements * {
+      color: #000 !important;
+    }
+
+    #contact,
+    #contact * {
+      color: #000 !important;
+    }
+
+    /* Duyurular bölümündeki h3 başlıkların mavi renkte kalmasını sağlıyoruz */
+    #announcements h3 {
+      color: #0073e6 !important;
+    }
+
+    /* h2 başlıkların global rengini korumak için */
+    h2 {
+      color: var(--primary) !important;
+    }
+  
+#authModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}
+
+.modal-blur {
+  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.5);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  color: #1e1e2f;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  margin: 10% auto;
+  z-index: 10000;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.modal-buttons button {
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+}
+
+.modal-buttons button:hover {
+  background-color: #005bb5;
+}
+
+</style>
+</head>
+<body>
+<section id="hero" style="background: url('icons/hero-banner.jpg') no-repeat center center/cover; color: white; padding: 6rem 2rem; text-align: center;">
+<h1 style="font-size: 3rem; margin-bottom: 1rem;">Track Your Bus in Real-Time</h1>
+<p style="font-size: 1.25rem; max-width: 700px; margin: auto;">Plan your journey with confidence and ease. Get live updates on bus locations and arrival times.</p>
+<a href="#map" style="display: inline-block; margin-top: 2rem; padding: 0.75rem 1.5rem; background-color: #0073e6; color: white; font-weight: bold; text-decoration: none; border-radius: 8px;">Find Your Bus</a>
+</section>
+<header>
+<div class="container">
+<div class="logo">Real-Time Bus Tracker</div>
+<nav>
+<ul>
+<li><a class="header-button" href="index.html#home">Home</a></li>
+<li><a class="header-button" href="index.html#schedule">Schedule</a></li>
+<li><a class="header-button" href="find-your-bus.html">Find Your Bus</a></li>
+<li><a class="header-button" href="index.html#contact">Contact</a></li>
+<li><a class="header-button" href="faq.html">FAQ</a></li>
+<li><a class="header-button" href="register.html">Register</a></li>
+</ul>
+</nav>
+</div>
+</header>
+<div class="section-wrapper">
+<section id="announcements">
+<h2 class="section-title">Latest Announcements</h2>
+<div id="announcements"></div>
+</section>
+</div>
+<div class="section-wrapper">
+<section id="schedule">
+<h2>Live Bus Schedule</h2>
+<div id="bus-schedule">
+<table class="schedule-table">
+<thead>
+<tr>
+<th>Route</th>
+<th>Departure</th>
+<th>Arrival</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</section>
+</div>
+<div class="section-wrapper">
+<section id="contact">
+<h2>Contact Us</h2>
+<form class="contact-form">
+<label for="name">Name:</label>
+<input id="name" required="" type="text"/>
+<label for="email">Email:</label>
+<input id="email" required="" type="email"/>
+<label for="message">Message:</label>
+<textarea id="message" required="" rows="5"></textarea>
+<button class="btn-primary" type="submit">Send</button>
+</form>
+</section>
+</div>
+<footer>
+<p>© 2025 Real-Time Bus Tracker. All Rights Reserved.</p>
+</footer>
+
+
+<script>
+function getStatusClass(status) {
+  if (status === "On Time") return "text-green-600 font-semibold italic";
+  if (status === "Delayed") return "text-yellow-500 font-semibold italic";
+  if (status === "Cancelled") return "text-red-500 font-semibold italic";
+  return "";
+}
+
+fetch("http://localhost:3000/api/routes")
+  .then(res => res.json())
+  .then(data => {
+    console.log("GELEN VERİ:", data);
+    const tbody = document.querySelector("#bus-schedule tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    data.forEach(route => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${route.route_number}</td>
+        <td>${route.from_location}</td>
+        <td>${route.to_location}</td>
+        <td>${route.frequency_minutes} min</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  })
+  .catch(err => console.error("FETCH HATASI", err));
+</script>
+<script>
+fetch("http://localhost:3000/api/announcements")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("announcements");
+    if (!container) return;
+
+    if (data.length === 0) {
+      container.innerHTML = "<p>No announcements at this time.</p>";
+      return;
+    }
+
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "announcement-item";
+      div.innerHTML = `
+        
+        <div class="announcement-content">
+          <h3>${item.title}</h3>
+          <p>${item.content}</p>
+          <small style="color:gray;">${new Date(item.created_at).toLocaleString()}</small>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  })
+  .catch(err => {
+    console.error("Failed to fetch announcements:", err);
+  });
+</script>
+
+
+<script>
+  const username = localStorage.getItem("username");
+  if (username) {
+    const userDisplay = document.createElement("div");
+    userDisplay.textContent = "Welcome, " + username;
+    userDisplay.style.position = "absolute";
+    userDisplay.style.top = "20px";
+    userDisplay.style.right = "20px";
+    userDisplay.style.color = "#2c2f3a";
+    userDisplay.style.fontWeight = "bold";
+    userDisplay.style.zIndex = "9999";
+    document.body.appendChild(userDisplay);
+  }
+</script>
+
+</body>
+</html>

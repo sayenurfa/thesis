@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Find Your Bus</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #1e1e2f; color: #f1f1f1;
+    }
+    h1 {
+      text-align: center;
+    }
+    #map {
+      background: #2e2e3e;
+      height: 500px;
+      margin-top: 2rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    select, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 0 0.5rem;
+    }
+  
+
+header {
+  background: white;
+  color: #2c2f3a;
+  padding: 1.5rem 0;
+  text-align: center;
+  border-radius: 16px;
+  max-width: 1300px;
+  margin: 2rem auto;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #2c2f3a;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  gap: 1rem;
+  padding: 0;
+}
+
+nav ul li a {
+  background-color: #e0e0e0;
+  color: #2c2f3a;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.05rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="logo">Real-Time Bus Tracker</h1>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="find-your-bus.html">Find Your Bus</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+    </ul>
+  </nav>
+</header>
+
+  <h1>Find Your Bus</h1>
+  <div class="controls">
+    <select id="buses"></select>
+    <button id="checkBus">Show on Map</button>
+  </div>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map('map').setView([47.9511, 21.727], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    let marker = null;
+    let polyline = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const busSelect = document.getElementById("buses");
+      console.log("📡 API çağrısı başladı");
+
+      fetch("http://localhost:3000/api/routes")
+        .then(res => res.json())
+        .then(routes => {
+          console.log("✅ Rotalar alındı:", routes);
+          busSelect.innerHTML = "";
+          routes.forEach(route => {
+            const option = document.createElement("option");
+            option.value = route.id;
+            option.textContent = `Bus ${route.route_number} (${route.from_location} → ${route.to_location})`;
+            busSelect.appendChild(option);
+          });
+        })
+        .catch(err => {
+          console.error("❌ fetch('/api/routes') hatası:", err);
+        });
+
+      document.getElementById("checkBus").addEventListener("click", () => {
+        startSimulation();
+      });
+    });
+
+    function startSimulation() {
+      console.log("🟢 Simülasyon başlatıldı.");
+      const routeId = document.getElementById("buses").value;
+      if (!routeId) return;
+
+      fetch(`http://localhost:3000/api/stops/${routeId}`)
+        .then(res => res.json())
+        .then(stops => {
+          console.log("📍 Duraklar alındı:", stops);
+          const latlngs = stops.map(stop => [parseFloat(stop.latitude), parseFloat(stop.longitude)]);
+
+          if (!latlngs.length) {
+            console.warn("⚠️ Bu rotaya ait durak yok.");
+            return;
+          }
+
+          if (polyline) map.removeLayer(polyline);
+          if (marker) map.removeLayer(marker);
+
+          polyline = L.polyline(latlngs, { color: 'blue' }).addTo(map);
+          map.fitBounds(polyline.getBounds());
+
+          let i = 0;
+          marker = L.marker(latlngs[0]).addTo(map);
+
+          function move() {
+            if (i >= latlngs.length) return;
+            marker.setLatLng(latlngs[i]);
+            console.log(`➡️ Marker ${i + 1}. durağa taşındı`);
+            i++;
+            setTimeout(move, 2000);
+          }
+          move();
+        })
+        .catch(err => {
+          console.error("❌ Simülasyon hatası:", err);
+        });
+    }
+  </script>
+</body>
+</html>
